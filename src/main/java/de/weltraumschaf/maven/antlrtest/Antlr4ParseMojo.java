@@ -107,17 +107,24 @@ public final class Antlr4ParseMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-//        if (skip) {
-//            getLog().info("Execution skipped.");
-//            return;
-//        }
-//
-//        final StringBuilder classNamePrefix = new StringBuilder();
-//        classNamePrefix.append(packageName).append('.').append(grammarName);
-//        final String lexerClassName = classNamePrefix.toString() + "Lexer";
-//        final String parserClassName = classNamePrefix.toString() + "Parser";
+        if (skip) {
+            getLog().info("Execution skipped.");
+            return;
+        }
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        final String lexerClassName = generateClassName(packageName, grammarName, "Lexer");
+        final String parserClassName = generateClassName(packageName, grammarName, "Parser");
+    }
+
+    static String generateClassName(final String packageName, final String grammarName, final String suffix) {
+        final StringBuilder buffer = new StringBuilder();
+
+        if (!packageName.isEmpty()) {
+            buffer.append(packageName).append('.');
+        }
+
+        buffer.append(grammarName).append(suffix);
+        return buffer.toString();
     }
 
 }

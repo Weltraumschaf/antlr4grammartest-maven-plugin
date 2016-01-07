@@ -49,4 +49,16 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
         assertThat(fileset.getExcludes(), contains("**/*.log"));
     }
 
+    @Test
+    public void testGenerateClassName_withEmptyPackage() {
+        assertThat(Antlr4ParseMojo.generateClassName("", "Foo", "Bar"), is("FooBar"));
+    }
+
+    @Test
+    public void testGenerateClassName_withPackage() {
+        assertThat(
+            Antlr4ParseMojo.generateClassName("de.weltraumschaf", "Foo", "Bar"),
+            is("de.weltraumschaf.FooBar"));
+    }
+
 }
