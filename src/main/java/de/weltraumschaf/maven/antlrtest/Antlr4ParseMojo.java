@@ -51,7 +51,31 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo(name = Antlr4ParseMojo.GOAL, defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
 public final class Antlr4ParseMojo extends AbstractMojo {
 
+    /**
+     * The goal name for this plugin.
+     */
     static final String GOAL = "test";
+
+    /**
+     * Whether the plugin execution should be skipped or not.
+     */
+    @Parameter(property="antlr4parse.skip")
+    private boolean skip;
+    /**
+     * The name of the rule where to start the parsing.
+     */
+    @Parameter(required = true)
+    private String startRule;
+    /**
+     * NAme of the parsed grammar.
+     */
+    @Parameter(required = true)
+    private String grammarName;
+    /**
+     * Optional package name.
+     */
+    @Parameter(defaultValue = "")
+    private String packageName;
 
     /**
      * https://maven.apache.org/shared/file-management/examples/mojo.html
@@ -59,8 +83,38 @@ public final class Antlr4ParseMojo extends AbstractMojo {
     @Parameter
     private FileSet[] filesets;
 
+    public boolean isSkip() {
+        return skip;
+    }
+
+    public String getStartRule() {
+        return startRule;
+    }
+
+    public String getGrammarName() {
+        return grammarName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public FileSet[] getFilesets() {
+        return filesets;
+    }
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Execution skipped.");
+            return;
+        }
+
+        final StringBuilder classNamePrefix = new StringBuilder();
+        classNamePrefix.append(packageName).append('.').append(grammarName);
+        final String lexerClassName = classNamePrefix.toString() + "Lexer";
+        final String parserClassName = classNamePrefix.toString() + "Parser";
+
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
