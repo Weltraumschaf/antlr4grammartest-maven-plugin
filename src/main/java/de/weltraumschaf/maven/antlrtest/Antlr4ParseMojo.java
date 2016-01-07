@@ -48,8 +48,10 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @since 1.0.0
  * @author Sven Strittmatter &lt;weltraumschaf@googlemail.com&gt;
  */
-@Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
+@Mojo(name = Antlr4ParseMojo.GOAL, defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
 public final class Antlr4ParseMojo extends AbstractMojo {
+
+    static final String GOAL = "test";
 
     /**
      * https://maven.apache.org/shared/file-management/examples/mojo.html
