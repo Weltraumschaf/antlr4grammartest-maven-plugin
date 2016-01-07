@@ -22,7 +22,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  *      <configuration>
  *          <skip>false</skip>
- *          <startRule>compilationUnit</startRule>
+ *          <startRule>startRule</startRule>
  *          <grammarName>Snafu</grammarName>
  *          <packageName>foo.bar.baz</packageName>
  *          <filesets>
