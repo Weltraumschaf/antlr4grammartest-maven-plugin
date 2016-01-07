@@ -15,7 +15,7 @@
                 <version>4.5.1-1</version>
 
                 <configuration>
-                    <grammars>tnt.g4</grammars>
+                    <grammars>Snafu.g4</grammars>
                 </configuration>
 
                 <executions>
@@ -37,16 +37,18 @@
                     <startRule>startRule</startRule>
                     <grammarName>Snafu</grammarName>
                     <packageName>foo.bar.baz</packageName>
+
                     <filesets>
                         <fileset>
                             <directory>src/test/snafu</directory>
+
                             <includes>
                                 <include>**/*.snf</include>
                             </includes>
+
                             <excludes>
                                 <exclude>**/*.log</exclude>
                             </excludes>
-                            <followSymlinks>false</followSymlinks>
                         </fileset>
                     </filesets>
                 </configuration>

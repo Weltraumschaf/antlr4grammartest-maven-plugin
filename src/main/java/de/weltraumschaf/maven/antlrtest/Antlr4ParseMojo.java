@@ -25,16 +25,18 @@ import org.apache.maven.plugins.annotations.Parameter;
  *          <startRule>startRule</startRule>
  *          <grammarName>Snafu</grammarName>
  *          <packageName>foo.bar.baz</packageName>
+ *
  *          <filesets>
  *              <fileset>
  *                  <directory>some/relative/path</directory>
+ *
  *                  <includes>
  *                      <include>**&#47;*.snf</include>
  *                  </includes>
+ *
  *                  <excludes>
  *                      <exclude>**&#47;log.log</exclude>
  *                  </excludes>
- *                  <followSymlinks>false</followSymlinks>
  *              </fileset>
  *          </filesets>
  *      </configuration>
@@ -59,7 +61,7 @@ public final class Antlr4ParseMojo extends AbstractMojo {
     /**
      * Whether the plugin execution should be skipped or not.
      */
-    @Parameter(property="antlr4parse.skip")
+    @Parameter(property = "antlr4parse.skip")
     private boolean skip;
     /**
      * The name of the rule where to start the parsing.
@@ -83,37 +85,37 @@ public final class Antlr4ParseMojo extends AbstractMojo {
     @Parameter
     private FileSet[] filesets;
 
-    public boolean isSkip() {
+    boolean isSkip() {
         return skip;
     }
 
-    public String getStartRule() {
+    String getStartRule() {
         return startRule;
     }
 
-    public String getGrammarName() {
+    String getGrammarName() {
         return grammarName;
     }
 
-    public String getPackageName() {
+    String getPackageName() {
         return packageName;
     }
 
-    public FileSet[] getFilesets() {
+    FileSet[] getFilesets() {
         return filesets;
     }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skip) {
-            getLog().info("Execution skipped.");
-            return;
-        }
-
-        final StringBuilder classNamePrefix = new StringBuilder();
-        classNamePrefix.append(packageName).append('.').append(grammarName);
-        final String lexerClassName = classNamePrefix.toString() + "Lexer";
-        final String parserClassName = classNamePrefix.toString() + "Parser";
+//        if (skip) {
+//            getLog().info("Execution skipped.");
+//            return;
+//        }
+//
+//        final StringBuilder classNamePrefix = new StringBuilder();
+//        classNamePrefix.append(packageName).append('.').append(grammarName);
+//        final String lexerClassName = classNamePrefix.toString() + "Lexer";
+//        final String parserClassName = classNamePrefix.toString() + "Parser";
 
         throw new UnsupportedOperationException("Not supported yet.");
     }
