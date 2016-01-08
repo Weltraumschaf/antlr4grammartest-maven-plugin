@@ -5,7 +5,7 @@ package foo.bar.baz;
 }
 
 startRule   : (statement EOL)* ;
-statement   : term ( (ADD | SUB) term )*
+statement   : term ( (ADD | SUB) term )* ;
 term        : factor ( (MUL | DIV ) factor )* ;
 factor      : constant | LPAREN statement RPAREN ;
 constant    : INTEGER | FLOAT ;
@@ -17,6 +17,7 @@ MUL     : '*' ;
 DIV     : '/' ;
 LPAREN  : '(' ;
 RPAREN  : ')' ;
+DOT     : '.' ;
 
 INTEGER : SIGN? DIGIT+ ;
 FLOAT   : SIGN? (DIGIT)+ DOT (DIGIT)* EXPONENT?

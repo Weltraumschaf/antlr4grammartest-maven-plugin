@@ -75,4 +75,32 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.5.1-1</version>
+
+                <configuration>
+                    <listener>false</listener>
+                    <visitor>false</visitor>
+                    <indentSize>4</indentSize>
+                    <lineLength>120</lineLength>
+                    <sourceDirectory>${project.basedir}/src/test/antlr4</sourceDirectory>
+                    <outputDirectory>${project.build.directory}/generated-test-sources/antlr4/foo/bar/baz</outputDirectory>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>generate-grammar</id>
+
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

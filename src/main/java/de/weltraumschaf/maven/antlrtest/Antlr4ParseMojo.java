@@ -1,5 +1,9 @@
 package de.weltraumschaf.maven.antlrtest;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Parser;
 import org.apache.maven.model.FileSet;
 import org.apache.maven.plugin.AbstractMojo;
 
@@ -113,7 +117,17 @@ public final class Antlr4ParseMojo extends AbstractMojo {
         }
 
         final String lexerClassName = generateClassName(packageName, grammarName, "Lexer");
+        final Class<? extends Lexer> lexerClass = createClass(lexerClassName, Lexer.class);
         final String parserClassName = generateClassName(packageName, grammarName, "Parser");
+        final Class<? extends Parser> parserClass = createClass(parserClassName, Parser.class);
+    }
+
+    private <U> Class<? extends U> createClass(final String name, final Class<U> superType) throws MojoFailureException {
+        try {
+            return getClass().getClassLoader().loadClass(name).asSubclass(superType);
+        } catch (final ClassNotFoundException ex) {
+            throw new MojoFailureException(String.format("", name));
+        }
     }
 
     static String generateClassName(final String packageName, final String grammarName, final String suffix) {
