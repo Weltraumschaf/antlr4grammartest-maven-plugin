@@ -1,10 +1,11 @@
 package de.weltraumschaf.maven.antlrtest;
 
 import java.io.File;
-import org.apache.maven.model.FileSet;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.shared.model.fileset.FileSet;
 import static org.codehaus.plexus.PlexusTestCase.getTestFile;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -38,6 +39,7 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
         assertThat(sut.getStartRule(), is("startRule"));
         assertThat(sut.getGrammarName(), is("Snafu"));
         assertThat(sut.getPackageName(), is("foo.bar.baz"));
+        assertThat(sut.getEncoding(), is(Antlr4ParseMojo.DEFAULT_ENCODING));
         assertThat(sut.getFilesets(), is(not(nullValue())));
         assertThat(sut.getFilesets().length, is(1));
 
@@ -59,6 +61,17 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
         assertThat(
             Antlr4ParseMojo.generateClassName("de.weltraumschaf", "Foo", "Bar"),
             is("de.weltraumschaf.FooBar"));
+    }
+
+    @Test
+    public void testGetFilesToTest() {
+        assertThat(sut.getFilesToTest(), hasSize(3));
+        assertThat(
+            sut.getFilesToTest(),
+            containsInAnyOrder(
+                "src/test/snafu/some.snf",
+                "src/test/snafu/with_errors.snf",
+                "src/test/snafu/without_errors.snf"));
     }
 
 }
