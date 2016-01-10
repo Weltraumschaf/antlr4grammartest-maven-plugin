@@ -64,14 +64,29 @@ final class Result {
         return new Result(true, testedFile, Validate.notNull(error, "Parameter 'error' must not be null!"));
     }
 
+    /**
+     * Whether the parse run failed or not.
+     *
+     * @return {@code true} if failed, else {@code false}
+     */
     boolean isFailed() {
         return failed;
     }
 
+    /**
+     * The relative path of parsed file as configured in the file set configuration.
+     *
+     * @return never {@code null} or empty
+     */
     String getTestedFile() {
         return testedFile;
     }
 
+    /**
+     * The causing error, if {@link #isFailed()}.
+     *
+     * @return {@code null} if {@link #isFailed()} is {@code false}
+     */
     ParseCancellationException getError() {
         return error;
     }
