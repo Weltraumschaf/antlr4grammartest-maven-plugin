@@ -17,6 +17,9 @@
     <description>This maven plugin gathers files for a givne grammar and try to parse them.</description>
 
     <properties>
+        <project.build.version.source>1.8</project.build.version.source>
+        <project.build.version.target>1.8</project.build.version.target>
+
         <enforcer.skip>true</enforcer.skip>
     </properties>
 

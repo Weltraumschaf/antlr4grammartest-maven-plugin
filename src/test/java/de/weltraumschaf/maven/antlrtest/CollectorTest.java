@@ -16,15 +16,15 @@ public class CollectorTest {
 
     @Test
     public void testAdd() {
-        assertThat(sut.count(), is(0));
+        assertThat(sut.count(), is(0L));
 
         sut.add(Result.passed("foo"));
 
-        assertThat(sut.count(), is(1));
+        assertThat(sut.count(), is(1L));
 
         sut.add(Result.failed("bar", mock(ParseCancellationException.class)));
 
-        assertThat(sut.count(), is(2));
+        assertThat(sut.count(), is(2L));
     }
 
     @Test
@@ -35,8 +35,8 @@ public class CollectorTest {
         sut.add(Result.failed("snafu", mock(ParseCancellationException.class)));
         sut.add(Result.failed("fubar", mock(ParseCancellationException.class)));
 
-        assertThat(sut.count(), is(5));
-        assertThat(sut.countPassed(), is(3));
-        assertThat(sut.countFailed(), is(2));
+        assertThat(sut.count(), is(5L));
+        assertThat(sut.countPassed(), is(3L));
+        assertThat(sut.countFailed(), is(2L));
     }
 }

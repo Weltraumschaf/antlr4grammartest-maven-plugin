@@ -17,23 +17,15 @@ final class Collector {
         results.add(result);
     }
 
-    int count() {
+    long count() {
         return results.size();
     }
 
-    int countFailed() {
-        int count = 0;
-
-        for (Result result : results) {
-            if (result.isFailed()) {
-                ++count;
-            }
-        }
-
-        return count;
+    long countFailed() {
+        return results.stream().filter(r -> r.isFailed()).count();
     }
 
-    int countPassed() {
+    long countPassed() {
         return count() - countFailed();
     }
 }
