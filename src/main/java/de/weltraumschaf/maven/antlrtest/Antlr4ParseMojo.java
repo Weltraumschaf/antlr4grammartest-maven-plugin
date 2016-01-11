@@ -1,13 +1,21 @@
 package de.weltraumschaf.maven.antlrtest;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import org.antlr.v4.runtime.ANTLRFileStream;
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.maven.plugin.AbstractMojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -67,6 +75,7 @@ public final class Antlr4ParseMojo extends AbstractMojo {
      */
     static final String GOAL = "test";
     static final String DEFAULT_ENCODING = "utf-8";
+    private final String NL = String.format("%n");
 
     /**
      * Whether the plugin execution should be skipped or not.
@@ -147,22 +156,66 @@ public final class Antlr4ParseMojo extends AbstractMojo {
             return;
         }
 
+        getLog().info(formatStartInfo());
+        final Collector tested = parseFiles();
+        getLog().info(formatResult(tested));
+    }
+
+    String formatStartInfo() {
+        return String.format(
+            "-------------------------------------------------------%n"
+            + "ANTLR4 Grammar Test%n"
+            + "-------------------------------------------------------");
+    }
+
+    private Collector parseFiles() throws MojoExecutionException {
+        final Constructor<? extends Lexer> lexerConstructor = createLexerConstructor();
+        final Constructor<? extends Parser> parserConstructor = createParserConstructor();
+        final Collector tested = new Collector();
+
+        for (final String fileToTest : getFilesToTest()) {
+            tested.add(parseFile(fileToTest, lexerConstructor, parserConstructor));
+        }
+
+        return tested;
+    }
+
+    String formatResult(final Collector tested) {
+        final StringBuilder buffer = new StringBuilder();
+        buffer.append("Results:").append(NL).append(NL);
+
+        if (tested.hasFailed()) {
+            buffer.append("Failed sources:").append(NL);
+            tested.results().stream().filter(r -> r.isFailed()).forEach(r -> {
+                buffer.append("  ").append(r.getTestedFile()).append(NL);
+                buffer.append("    ").append(r.getError().getMessage()).append(NL);
+            });
+            buffer.append(NL);
+        }
+
+        buffer.append(String.format("Sources parsed: %d, Failed: %d%n", tested.count(), tested.countFailed()));
+        return buffer.toString();
+    }
+
+    final Constructor<? extends Lexer> createLexerConstructor() throws MojoExecutionException {
         final String lexerClassName = generateClassName(packageName, grammarName, "Lexer");
         getLog().info(String.format("Using lexer class '%s'.", lexerClassName));
         final Class<? extends Lexer> lexerClass = createClass(lexerClassName, Lexer.class);
 
         try {
-            final Constructor<?> lexerConstructor = lexerClass.getConstructor(CharStream.class);
+            return lexerClass.getConstructor(CharStream.class);
         } catch (final NoSuchMethodException | SecurityException ex) {
             throw new MojoExecutionException(String.format("Can not get constructor for '%s'!", lexerClassName));
         }
+    }
 
+    final Constructor<? extends Parser> createParserConstructor() throws MojoExecutionException {
         final String parserClassName = generateClassName(packageName, grammarName, "Parser");
         getLog().info(String.format("Using parser class '%s'.", parserClassName));
         final Class<? extends Parser> parserClass = createClass(parserClassName, Parser.class);
 
         try {
-            final Constructor<?> parserConstructor = parserClass.getConstructor(TokenStream.class);
+            return parserClass.getConstructor(TokenStream.class);
         } catch (final NoSuchMethodException | SecurityException ex) {
             throw new MojoExecutionException(String.format("Can not get constructor for '%s'!", parserClassName));
         }
@@ -185,6 +238,27 @@ public final class Antlr4ParseMojo extends AbstractMojo {
 
         buffer.append(grammarName).append(suffix);
         return buffer.toString();
+    }
+
+    private Result parseFile(final String fileToTest, final Constructor<?> lexerConstructor, final Constructor<?> parserConstructor) throws MojoExecutionException {
+        final Path absoluteFileName = Paths.get(fileToTest).toAbsolutePath();
+        getLog().info(String.format("Parse file '%s'...", absoluteFileName.toString()));
+
+        try {
+            final ANTLRFileStream stream = new ANTLRFileStream(absoluteFileName.toString(), encoding);
+            final Lexer lexer = (Lexer) lexerConstructor.newInstance(stream);
+            final CommonTokenStream tokens = new CommonTokenStream(lexer);
+            final Parser parser = (Parser) parserConstructor.newInstance(tokens);
+            parser.setErrorHandler(new BailErrorStrategy());
+            final Method start = parser.getClass().getMethod(startRule);
+            start.invoke(parser);
+            return Result.passed(fileToTest);
+        } catch (final IOException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex);
+        } catch (final ParseCancellationException ex) {
+            getLog().error(ex.getMessage(), ex);
+            return Result.failed(fileToTest, ex);
+        }
     }
 
 }

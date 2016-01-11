@@ -1,6 +1,9 @@
 package de.weltraumschaf.maven.antlrtest;
 
 import java.io.File;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.shared.model.fileset.FileSet;
 import static org.codehaus.plexus.PlexusTestCase.getTestFile;
@@ -20,6 +23,7 @@ import org.junit.Test;
  */
 public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
 
+    private final String NL = String.format("%n");
     private static final String FIXTURE_POM = "src/test/resources/fixture-pom.xml";
     private Antlr4ParseMojo sut;
 
@@ -72,6 +76,63 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
                 "src/test/snafu/some.snf",
                 "src/test/snafu/with_errors.snf",
                 "src/test/snafu/without_errors.snf"));
+    }
+
+    @Test
+    public void testPrintStartInfo() throws MojoExecutionException, MojoFailureException {
+        assertThat(
+            sut.formatStartInfo(),
+            is("-------------------------------------------------------" + NL
+                + "ANTLR4 Grammar Test" + NL
+                + "-------------------------------------------------------"));
+    }
+
+    @Test
+    public void testFormatResult_empty() {
+        final Collector tested = new Collector();
+
+        assertThat(
+            sut.formatResult(tested),
+            is(
+                "Results:" + NL
+                + NL
+                + "Sources parsed: 0, Failed: 0" + NL));
+    }
+
+    @Test
+    public void testFormatResult_allPassed() {
+        final Collector tested = new Collector();
+        tested.add(Result.passed("foo.snf"));
+        tested.add(Result.passed("bar.snf"));
+        tested.add(Result.passed("baz.snf"));
+
+        assertThat(
+            sut.formatResult(tested),
+            is(
+                "Results:" + NL
+                + NL
+                + "Sources parsed: 3, Failed: 0" + NL));
+    }
+
+    @Test
+    public void testFormatResult_someFailed() {
+        final Collector tested = new Collector();
+        tested.add(Result.passed("foo.snf"));
+        tested.add(Result.failed("bar.snf", new ParseCancellationException("Snafu one!")));
+        tested.add(Result.failed("baz.snf", new ParseCancellationException("Snafu two!")));
+
+        assertThat(
+            sut.formatResult(tested),
+            is(
+                "Results:" + NL
+                + NL
+                + "Failed sources:" + NL
+                + "  bar.snf" + NL
+                + "    Snafu one!" + NL
+                + "  baz.snf" + NL
+                + "    Snafu two!" + NL
+                + NL
+                + "Sources parsed: 3, Failed: 2" + NL));
     }
 
 }

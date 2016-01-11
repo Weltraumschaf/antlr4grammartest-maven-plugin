@@ -2,6 +2,7 @@ package de.weltraumschaf.maven.antlrtest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -54,5 +55,24 @@ final class Collector {
      */
     long countPassed() {
         return count() - countFailed();
+    }
+
+    /**
+     * Whether there are failed results collected.
+     *
+     * @return {@code true} if there are failed results, else {@code false}
+     */
+    boolean hasFailed() {
+        return countFailed() > 0;
+    }
+
+    /**
+     * Get all collected results.
+     *
+     * @return never {@code null}, unmodifiable copy
+     */
+    Collection<Result> results() {
+        // Return defensive copy for thread safty.
+        return Collections.unmodifiableCollection(new ArrayList<>(results));
     }
 }
