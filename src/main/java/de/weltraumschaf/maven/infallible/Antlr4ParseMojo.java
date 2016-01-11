@@ -1,4 +1,4 @@
-package de.weltraumschaf.maven.antlrtest;
+package de.weltraumschaf.maven.infallible;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

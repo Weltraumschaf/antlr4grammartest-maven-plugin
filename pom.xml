@@ -9,12 +9,12 @@
     </parent>
 
     <groupId>de.weltraumschaf.maven</groupId>
-    <artifactId>antlr4grammartest-maven-plugin</artifactId>
+    <artifactId>infallible-maven-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>ANTLR4 Grammar Test Plugin</name>
-    <description>This maven plugin gathers files for a givne grammar and try to parse them.</description>
+    <name>Infallible MAven Plugin</name>
+    <description>This maven plugin gathers files for a given ANTLR4 grammar and try to parse them.</description>
 
     <properties>
         <project.build.version.source>1.8</project.build.version.source>

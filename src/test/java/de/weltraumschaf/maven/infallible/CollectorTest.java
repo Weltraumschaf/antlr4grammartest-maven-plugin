@@ -1,5 +1,4 @@
-
-package de.weltraumschaf.maven.antlrtest;
+package de.weltraumschaf.maven.infallible;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import static org.hamcrest.Matchers.is;

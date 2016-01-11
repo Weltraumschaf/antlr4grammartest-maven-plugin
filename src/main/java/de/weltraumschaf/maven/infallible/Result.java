@@ -1,4 +1,4 @@
-package de.weltraumschaf.maven.antlrtest;
+package de.weltraumschaf.maven.infallible;
 
 import java.util.Objects;
 import org.antlr.v4.runtime.misc.ParseCancellationException;

@@ -56,7 +56,7 @@ Then the configuration in the POM should look like:
         <plugins>
             <plugin>
                 <groupId>de.weltraumschaf.maven</groupId>
-                <artifactId>antlr4grammartest-maven-plugin</artifactId>
+                <artifactId>infallible-maven-plugin</artifactId>
                 <version>1.0.0-alpha</version>
 
                 <configuration>

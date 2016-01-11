@@ -1,5 +1,5 @@
 
-package de.weltraumschaf.maven.antlrtest;
+package de.weltraumschaf.maven.infallible;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
