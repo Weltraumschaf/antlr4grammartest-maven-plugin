@@ -13,7 +13,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Infallible MAven Plugin</name>
+    <name>Infallible Maven Plugin</name>
     <description>This maven plugin gathers files for a given ANTLR4 grammar and try to parse them.</description>
 
     <properties>
@@ -109,6 +109,12 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <!-- http://wiki.netbeans.org/MavenCodeCoverage -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

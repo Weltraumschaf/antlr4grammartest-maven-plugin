@@ -17,15 +17,15 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 /**
- * Tests for {@link Antlr4ParseMojo}.
+ * Tests for {@link InfallibleMojo}.
  *
  * @author Sven Strittmatter &lt;weltraumschaf@googlemail.com&gt;
  */
-public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
+public final class InfallibleMojoTest extends AbstractMojoTestCase {
 
     private final String NL = String.format("%n");
     private static final String FIXTURE_POM = "src/test/resources/fixture-pom.xml";
-    private Antlr4ParseMojo sut;
+    private InfallibleMojo sut;
 
     @Override
     protected void setUp() throws Exception {
@@ -33,7 +33,7 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
         final File pom = getTestFile(FIXTURE_POM);
         assertThat(pom, is(not(nullValue())));
         assertThat(pom.exists(), is(true));
-        sut = (Antlr4ParseMojo) lookupMojo(Antlr4ParseMojo.GOAL, pom);
+        sut = (InfallibleMojo) lookupMojo(InfallibleMojo.GOAL, pom);
         assertThat(sut, is(not(nullValue())));
     }
 
@@ -43,7 +43,7 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
         assertThat(sut.getStartRule(), is("startRule"));
         assertThat(sut.getGrammarName(), is("Snafu"));
         assertThat(sut.getPackageName(), is("foo.bar.baz"));
-        assertThat(sut.getEncoding(), is(Antlr4ParseMojo.DEFAULT_ENCODING));
+        assertThat(sut.getEncoding(), is(InfallibleMojo.DEFAULT_ENCODING));
         assertThat(sut.getFilesets(), is(not(nullValue())));
         assertThat(sut.getFilesets().length, is(1));
 
@@ -57,13 +57,12 @@ public final class Antlr4ParseMojoTest extends AbstractMojoTestCase {
 
     @Test
     public void testGenerateClassName_withEmptyPackage() {
-        assertThat(Antlr4ParseMojo.generateClassName("", "Foo", "Bar"), is("FooBar"));
+        assertThat(InfallibleMojo.generateClassName("", "Foo", "Bar"), is("FooBar"));
     }
 
     @Test
     public void testGenerateClassName_withPackage() {
-        assertThat(
-            Antlr4ParseMojo.generateClassName("de.weltraumschaf", "Foo", "Bar"),
+        assertThat(InfallibleMojo.generateClassName("de.weltraumschaf", "Foo", "Bar"),
             is("de.weltraumschaf.FooBar"));
     }
 

@@ -67,8 +67,8 @@ import org.apache.maven.shared.model.fileset.util.FileSetManager;
  * @since 1.0.0
  * @author Sven Strittmatter &lt;weltraumschaf@googlemail.com&gt;
  */
-@Mojo(name = Antlr4ParseMojo.GOAL, defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
-public final class Antlr4ParseMojo extends AbstractMojo {
+@Mojo(name = InfallibleMojo.GOAL, defaultPhase = LifecyclePhase.TEST, requiresProject = true, threadSafe = false)
+public final class InfallibleMojo extends AbstractMojo {
 
     /**
      * The goal name for this plugin.
@@ -80,7 +80,7 @@ public final class Antlr4ParseMojo extends AbstractMojo {
     /**
      * Whether the plugin execution should be skipped or not.
      */
-    @Parameter(property = "antlr4parse.skip")
+    @Parameter(property = "infallible.skip")
     private boolean skip;
     /**
      * The name of the rule where to start the parsing.
