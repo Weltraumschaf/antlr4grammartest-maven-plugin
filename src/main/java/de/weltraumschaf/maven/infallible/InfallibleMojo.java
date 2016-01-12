@@ -1,9 +1,13 @@
 package de.weltraumschaf.maven.infallible;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -102,7 +106,6 @@ public final class InfallibleMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = DEFAULT_ENCODING)
     private String encoding = DEFAULT_ENCODING;
-
     /**
      * Which files to test.
      *
@@ -110,6 +113,11 @@ public final class InfallibleMojo extends AbstractMojo {
      */
     @Parameter
     private FileSet[] filesets;
+    /**
+     * Needed for classloader.
+     */
+    @Parameter(defaultValue = "${project.build.outputDirectory}", readonly = true)
+    private File outputDirectory;
 
     private final FileSetManager fileSetManager = new FileSetManager();
 
@@ -226,11 +234,18 @@ public final class InfallibleMojo extends AbstractMojo {
 
     private <U> Class<? extends U> createClass(final String name, final Class<U> superType) throws MojoExecutionException {
         try {
-            return getClass().getClassLoader().loadClass(name).asSubclass(superType);
-        } catch (final ClassNotFoundException ex) {
-            throw new MojoExecutionException(String.format("Can not create class '%s'!", name));
+            return getClassLoader().loadClass(name).asSubclass(superType);
+        } catch (final ClassNotFoundException | MalformedURLException ex) {
+            throw new MojoExecutionException(
+                String.format("Can not create class '%s' (%s)!", name, ex.getMessage()), ex);
         }
     }
+
+    private ClassLoader getClassLoader() throws MalformedURLException  {
+      return new URLClassLoader(
+          new URL[] { outputDirectory.toURI().toURL() },
+          Thread.currentThread().getContextClassLoader());
+   }
 
     static String generateClassName(final String packageName, final String grammarName, final String suffix) {
         final StringBuilder buffer = new StringBuilder();
