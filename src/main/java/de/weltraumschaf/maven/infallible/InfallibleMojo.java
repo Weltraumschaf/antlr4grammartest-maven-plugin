@@ -159,6 +159,10 @@ public final class InfallibleMojo extends AbstractMojo {
         getLog().info(formatStartInfo());
         final Collector tested = parseFiles();
         getLog().info(formatResult(tested));
+
+        if (tested.hasFailed()) {
+            throw new MojoFailureException("TODO");
+        }
     }
 
     String formatStartInfo() {
