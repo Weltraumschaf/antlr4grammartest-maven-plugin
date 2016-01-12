@@ -252,9 +252,7 @@ public final class InfallibleMojo extends AbstractMojo {
     }
 
     private ClassLoader getClassLoader() throws MalformedURLException {
-        return new URLClassLoader(
-            new URL[]{outputDirectory.toURI().toURL()},
-            Thread.currentThread().getContextClassLoader());
+        return new ClassLoaderFactory(outputDirectory).getClassLoader();
     }
 
     static String generateClassName(final String packageName, final String grammarName, final String suffix) {
