@@ -4,6 +4,7 @@ import java.io.File;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.shared.model.fileset.FileSet;
 import static org.codehaus.plexus.PlexusTestCase.getTestFile;
@@ -15,6 +16,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
+import org.mockito.InOrder;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link InfallibleMojo}.
@@ -79,11 +84,15 @@ public final class InfallibleMojoTest extends AbstractMojoTestCase {
 
     @Test
     public void testPrintStartInfo() throws MojoExecutionException, MojoFailureException {
-        assertThat(
-            sut.formatStartInfo(),
-            is("-------------------------------------------------------" + NL
-                + "ANTLR4 Grammar Test" + NL
-                + "-------------------------------------------------------"));
+        final Log log = mock(Log.class);
+        sut.setLog(log);
+
+        sut.printStartInfo();
+
+        final InOrder order = inOrder(log);
+        order.verify(log, times(1)).info("-------------------------------------------------------");
+        order.verify(log, times(1)).info("ANTLR4 Grammar Test");
+        order.verify(log, times(1)).info("-------------------------------------------------------");
     }
 
     @Test

@@ -156,7 +156,7 @@ public final class InfallibleMojo extends AbstractMojo {
             return;
         }
 
-        getLog().info(formatStartInfo());
+        printStartInfo();
         final Collector tested = parseFiles();
         getLog().info(formatResult(tested));
 
@@ -165,11 +165,10 @@ public final class InfallibleMojo extends AbstractMojo {
         }
     }
 
-    String formatStartInfo() {
-        return String.format(
-            "-------------------------------------------------------%n"
-            + "ANTLR4 Grammar Test%n"
-            + "-------------------------------------------------------");
+    void printStartInfo() {
+        getLog().info("-------------------------------------------------------");
+        getLog().info("ANTLR4 Grammar Test");
+        getLog().info("-------------------------------------------------------");
     }
 
     private Collector parseFiles() throws MojoExecutionException {
