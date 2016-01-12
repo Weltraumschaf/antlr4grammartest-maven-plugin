@@ -39,7 +39,7 @@ The grammar file (_Snafu.g4_) looks like (unimportant details ommited):
 
     // (1) Name of grammar.
     grammar Snafu;
-    
+
     // (2) Package for the ANTLR genrated classes.
     @header {
     package foo.bar.baz;
@@ -58,7 +58,7 @@ Then the configuration in the POM should look like:
                 <groupId>de.weltraumschaf.maven</groupId>
                 <artifactId>infallible-maven-plugin</artifactId>
                 <version>1.0.0-alpha</version>
-
+                
                 <configuration>
                     <!-- (1) This is the name of the grammar. -->
                     <grammarName>Snafu</grammarName>
@@ -76,7 +76,7 @@ Then the configuration in the POM should look like:
                                 <!-- Include every file with .snf extension in all subdirecotries. -->
                                 <include>**/*.snf</include>
                             </includes>
-
+                            
                             <excludes>
                                 <!-- Exclude log files. -->
                                 <exclude>**/*.log</exclude>
@@ -84,6 +84,16 @@ Then the configuration in the POM should look like:
                         </fileset>
                     </filesets>
                 </configuration>
+                
+                <executions>
+                    <execution>
+                        <id>parse-all-files</id>
+
+                        <goals>
+                            <goal>parse</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -106,7 +116,7 @@ genrated lexer/parse to show errors in the examples or the grammar.
 But I had some problems with this tool:
 
 - It  is not released  into Maven Central.  So if you want  to use it,  you must
-build it on your machine. 
+build it on your machine.
 - It does not support filesets like most other Maven plugins.
 - It fails on the first error instead of collecting them all.
 - The errors are wrapped by maven exceptions and so not always helpful.

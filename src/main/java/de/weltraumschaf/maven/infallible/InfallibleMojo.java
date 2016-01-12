@@ -61,6 +61,16 @@ import org.apache.maven.shared.model.fileset.util.FileSetManager;
  *              </fileset>
  *          </filesets>
  *      </configuration>
+ *
+ *      <executions>
+ *          <execution>
+ *              <id>parse-all-files</id>
+ *
+ *              <goals>
+ *                  <goal>parse</goal>
+ *              </goals>
+ *          </execution>
+ *      </executions>
  * </plugin>
  * }</pre>
  *
@@ -77,7 +87,7 @@ public final class InfallibleMojo extends AbstractMojo {
     /**
      * The goal name for this plugin.
      */
-    static final String GOAL = "test";
+    static final String GOAL = "parse";
     static final String DEFAULT_ENCODING = "utf-8";
     private final String NL = String.format("%n");
 
@@ -241,11 +251,11 @@ public final class InfallibleMojo extends AbstractMojo {
         }
     }
 
-    private ClassLoader getClassLoader() throws MalformedURLException  {
-      return new URLClassLoader(
-          new URL[] { outputDirectory.toURI().toURL() },
-          Thread.currentThread().getContextClassLoader());
-   }
+    private ClassLoader getClassLoader() throws MalformedURLException {
+        return new URLClassLoader(
+            new URL[]{outputDirectory.toURI().toURL()},
+            Thread.currentThread().getContextClassLoader());
+    }
 
     static String generateClassName(final String packageName, final String grammarName, final String suffix) {
         final StringBuilder buffer = new StringBuilder();
