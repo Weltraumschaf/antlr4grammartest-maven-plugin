@@ -1,7 +1,6 @@
 package de.weltraumschaf.maven.infallible;
 
 import java.io.File;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.times;
  */
 public final class InfallibleMojoTest extends AbstractMojoTestCase {
 
-    private final String NL = String.format("%n");
     private static final String FIXTURE_POM = "src/test/resources/fixture-pom.xml";
     private InfallibleMojo sut;
 
@@ -93,54 +91,6 @@ public final class InfallibleMojoTest extends AbstractMojoTestCase {
         order.verify(log, times(1)).info("-------------------------------------------------------");
         order.verify(log, times(1)).info("ANTLR4 Grammar Test");
         order.verify(log, times(1)).info("-------------------------------------------------------");
-    }
-
-    @Test
-    public void testFormatResult_empty() {
-        final Collector tested = new Collector();
-
-        assertThat(
-            sut.formatResult(tested),
-            is(
-                "Results:" + NL
-                + NL
-                + "Sources parsed: 0, Failed: 0" + NL));
-    }
-
-    @Test
-    public void testFormatResult_allPassed() {
-        final Collector tested = new Collector();
-        tested.add(Result.passed("foo.snf"));
-        tested.add(Result.passed("bar.snf"));
-        tested.add(Result.passed("baz.snf"));
-
-        assertThat(
-            sut.formatResult(tested),
-            is(
-                "Results:" + NL
-                + NL
-                + "Sources parsed: 3, Failed: 0" + NL));
-    }
-
-    @Test
-    public void testFormatResult_someFailed() {
-        final Collector tested = new Collector();
-        tested.add(Result.passed("foo.snf"));
-        tested.add(Result.failed("bar.snf", new ParseCancellationException("Snafu one!")));
-        tested.add(Result.failed("baz.snf", new ParseCancellationException("Snafu two!")));
-
-        assertThat(
-            sut.formatResult(tested),
-            is(
-                "Results:" + NL
-                + NL
-                + "Failed sources:" + NL
-                + "  bar.snf" + NL
-                + "    Snafu one!" + NL
-                + "  baz.snf" + NL
-                + "    Snafu two!" + NL
-                + NL
-                + "Sources parsed: 3, Failed: 2" + NL));
     }
 
 }

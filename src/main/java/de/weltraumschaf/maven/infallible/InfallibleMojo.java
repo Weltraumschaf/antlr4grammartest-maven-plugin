@@ -89,7 +89,6 @@ public final class InfallibleMojo extends AbstractMojo {
      */
     static final String GOAL = "parse";
     static final String DEFAULT_ENCODING = "utf-8";
-    private final String NL = String.format("%n");
 
     /**
      * Whether the plugin execution should be skipped or not.
@@ -176,7 +175,7 @@ public final class InfallibleMojo extends AbstractMojo {
 
         printStartInfo();
         final Collector tested = parseFiles();
-        getLog().info(formatResult(tested));
+        getLog().info(new ResultFormatter().format(tested));
 
         if (tested.hasFailed()) {
             throw new MojoFailureException("TODO");
@@ -199,23 +198,6 @@ public final class InfallibleMojo extends AbstractMojo {
         }
 
         return tested;
-    }
-
-    String formatResult(final Collector tested) {
-        final StringBuilder buffer = new StringBuilder();
-        buffer.append("Results:").append(NL).append(NL);
-
-        if (tested.hasFailed()) {
-            buffer.append("Failed sources:").append(NL);
-            tested.results().stream().filter(r -> r.isFailed()).forEach(r -> {
-                buffer.append("  ").append(r.getTestedFile()).append(NL);
-                buffer.append("    ").append(r.getError().getMessage()).append(NL);
-            });
-            buffer.append(NL);
-        }
-
-        buffer.append(String.format("Sources parsed: %d, Failed: %d%n", tested.count(), tested.countFailed()));
-        return buffer.toString();
     }
 
     final Constructor<? extends Lexer> createLexerConstructor() throws MojoExecutionException {
