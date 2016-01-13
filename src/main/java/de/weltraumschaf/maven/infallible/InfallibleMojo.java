@@ -5,20 +5,15 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.maven.plugin.AbstractMojo;
 
@@ -88,6 +83,11 @@ public final class InfallibleMojo extends AbstractMojo {
      * The goal name for this plugin.
      */
     static final String GOAL = "parse";
+    /**
+     * Default encoding to read files.
+     *
+     * FIXME Use the Maven OM property for resource encoding.
+     */
     static final String DEFAULT_ENCODING = "utf-8";
 
     /**
@@ -189,84 +189,22 @@ public final class InfallibleMojo extends AbstractMojo {
     }
 
     private Collector parseFiles() throws MojoExecutionException {
-        final Constructor<? extends Lexer> lexerConstructor = createLexerConstructor();
-        final Constructor<? extends Parser> parserConstructor = createParserConstructor();
+        final ParserFactory parsers = new ParserFactory(
+            getLog(),
+            new ClassLoaderFactory(outputDirectory).getClassLoader(),
+            packageName,
+            grammarName);
         final Collector tested = new Collector();
 
         for (final String fileToTest : getFilesToTest()) {
-            tested.add(parseFile(fileToTest, lexerConstructor, parserConstructor));
+            final Path absoluteFileName = Paths.get(fileToTest).toAbsolutePath();
+            final Parser parser = parsers.create(absoluteFileName, encoding);
+            getLog().info(String.format("Parse file '%s'...", absoluteFileName.toString()));
+            final ParserInvoker invocation = new ParserInvoker(getLog(), parser, startRule);
+            tested.add(invocation.invoke());
         }
 
         return tested;
-    }
-
-    final Constructor<? extends Lexer> createLexerConstructor() throws MojoExecutionException {
-        final String lexerClassName = generateClassName(packageName, grammarName, "Lexer");
-        getLog().info(String.format("Using lexer class '%s'.", lexerClassName));
-        final Class<? extends Lexer> lexerClass = createClass(lexerClassName, Lexer.class);
-
-        try {
-            return lexerClass.getConstructor(CharStream.class);
-        } catch (final NoSuchMethodException | SecurityException ex) {
-            throw new MojoExecutionException(String.format("Can not get constructor for '%s'!", lexerClassName));
-        }
-    }
-
-    final Constructor<? extends Parser> createParserConstructor() throws MojoExecutionException {
-        final String parserClassName = generateClassName(packageName, grammarName, "Parser");
-        getLog().info(String.format("Using parser class '%s'.", parserClassName));
-        final Class<? extends Parser> parserClass = createClass(parserClassName, Parser.class);
-
-        try {
-            return parserClass.getConstructor(TokenStream.class);
-        } catch (final NoSuchMethodException | SecurityException ex) {
-            throw new MojoExecutionException(String.format("Can not get constructor for '%s'!", parserClassName));
-        }
-    }
-
-    private <U> Class<? extends U> createClass(final String name, final Class<U> superType) throws MojoExecutionException {
-        try {
-            return getClassLoader().loadClass(name).asSubclass(superType);
-        } catch (final ClassNotFoundException | MalformedURLException ex) {
-            throw new MojoExecutionException(
-                String.format("Can not create class '%s' (%s)!", name, ex.getMessage()), ex);
-        }
-    }
-
-    private ClassLoader getClassLoader() throws MalformedURLException {
-        return new ClassLoaderFactory(outputDirectory).getClassLoader();
-    }
-
-    static String generateClassName(final String packageName, final String grammarName, final String suffix) {
-        final StringBuilder buffer = new StringBuilder();
-
-        if (!packageName.isEmpty()) {
-            buffer.append(packageName).append('.');
-        }
-
-        buffer.append(grammarName).append(suffix);
-        return buffer.toString();
-    }
-
-    private Result parseFile(final String fileToTest, final Constructor<?> lexerConstructor, final Constructor<?> parserConstructor) throws MojoExecutionException {
-        final Path absoluteFileName = Paths.get(fileToTest).toAbsolutePath();
-        getLog().info(String.format("Parse file '%s'...", absoluteFileName.toString()));
-
-        try {
-            final ANTLRFileStream stream = new ANTLRFileStream(absoluteFileName.toString(), encoding);
-            final Lexer lexer = (Lexer) lexerConstructor.newInstance(stream);
-            final CommonTokenStream tokens = new CommonTokenStream(lexer);
-            final Parser parser = (Parser) parserConstructor.newInstance(tokens);
-            parser.setErrorHandler(new BailErrorStrategy());
-            final Method start = parser.getClass().getMethod(startRule);
-            start.invoke(parser);
-            return Result.passed(fileToTest);
-        } catch (final IOException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-            throw new MojoExecutionException(ex.getMessage(), ex);
-        } catch (final ParseCancellationException ex) {
-            getLog().error(ex.getMessage(), ex);
-            return Result.failed(fileToTest, ex);
-        }
     }
 
 }

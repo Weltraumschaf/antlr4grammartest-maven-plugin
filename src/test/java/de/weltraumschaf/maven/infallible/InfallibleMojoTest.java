@@ -58,17 +58,7 @@ public final class InfallibleMojoTest extends AbstractMojoTestCase {
         assertThat(fileset.getExcludes(), contains("**/*.log"));
     }
 
-    @Test
-    public void testGenerateClassName_withEmptyPackage() {
-        assertThat(InfallibleMojo.generateClassName("", "Foo", "Bar"), is("FooBar"));
-    }
-
-    @Test
-    public void testGenerateClassName_withPackage() {
-        assertThat(InfallibleMojo.generateClassName("de.weltraumschaf", "Foo", "Bar"),
-            is("de.weltraumschaf.FooBar"));
-    }
-
+    
     @Test
     public void testGetFilesToTest() {
         assertThat(sut.getFilesToTest(), hasSize(3));

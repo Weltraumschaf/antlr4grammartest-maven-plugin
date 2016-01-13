@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Collector}.
+ *
+ * @author Sven Strittmatter &lt;weltraumschaf@googlemail.com&gt;
  */
 public class CollectorTest {
 
