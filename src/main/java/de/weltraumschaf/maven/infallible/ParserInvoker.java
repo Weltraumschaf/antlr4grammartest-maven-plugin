@@ -59,15 +59,25 @@ final class ParserInvoker {
             log.error(ex.getMessage(), ex);
             return Result.failed(fileToTest, ex);
         } catch (final IllegalAccessException ex) {
-            throw new MojoExecutionException(String.format("TODO (%s)", ex.getMessage()), ex);
-        } catch (final IllegalArgumentException ex) {
-            throw new MojoExecutionException(String.format("TODO (%s)", ex.getMessage()), ex);
+            throw new MojoExecutionException(
+                String.format("Can't access method '%s' on parser (%s)!",
+                    methodName, ex.getMessage()),
+                ex);
         } catch (final InvocationTargetException ex) {
-            throw new MojoExecutionException(String.format("TODO (%s)", ex.getMessage()), ex);
+            throw new MojoExecutionException(
+                String.format("Can't invoke method '%s' on target parser (%s)!",
+                    methodName, ex.getMessage()),
+                ex);
         } catch (final NoSuchMethodException ex) {
-            throw new MojoExecutionException(String.format("TODO (%s)", ex.getMessage()), ex);
+            throw new MojoExecutionException(
+                String.format("Given parser has not method with name '%s' (%s)",
+                    methodName, ex.getMessage()),
+                ex);
         } catch (final SecurityException ex) {
-            throw new MojoExecutionException(String.format("TODO (%s)", ex.getMessage()), ex);
+            throw new MojoExecutionException(
+                String.format("can't invoke method '%s; due to security restricitons  (%s)!",
+                    methodName,ex.getMessage()),
+                ex);
         }
     }
 }
